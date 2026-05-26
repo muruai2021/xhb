@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理后台 - 猩伙伴民宿</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="admin-container" id="adminApp">
+    <!-- Login Section (shown when not logged in) -->
+    <div class="login-container" id="loginSection">
+      <h1 class="login-title">管理员登录</h1>
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label">手机号</label>
+          <input type="tel" class="form-input" id="loginPhone" placeholder="请输入手机号" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <input type="password" class="form-input" id="loginPassword" placeholder="请输入密码" required>
+        </div>
+        <button type="submit" class="btn-login">登录</button>
+      </form>
+      <p style="text-align: center; margin-top: 20px; color: var(--text-muted); font-size: 0.85rem;">
+        初始账号: 15874818550 / 密码: 123456
+      </p>
+    </div>
+
+    <!-- Admin Dashboard (shown when logged in) -->
+    <div id="adminDashboard" style="display: none;">
+      <!-- Left Sidebar -->
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-header">
+          <img src="images/logo.jpg" alt="猩伙伴" class="sidebar-logo">
+          <span class="sidebar-title">猩伙伴</span>
+        </div>
+        <a href="index.html" class="sidebar-item" style="margin: 12px 8px; padding: 10px 12px; border-radius: 8px; background: var(--bg-secondary); color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+          <span>返回官网</span>
+        </a>
+        <nav class="sidebar-nav">
+          <button class="sidebar-item active" data-tab="communities">
+            <span class="sidebar-icon" id="icon-buildings"></span>
+            <span class="sidebar-text">小区管理</span>
+          </button>
+          <button class="sidebar-item" data-tab="properties">
+            <span class="sidebar-icon" id="icon-house"></span>
+            <span class="sidebar-text">房源管理</span>
+          </button>
+          <button class="sidebar-item" data-tab="ai-settings">
+            <span class="sidebar-icon" id="icon-settings"></span>
+            <span class="sidebar-text">知识库设置</span>
+          </button>
+          <button class="sidebar-item" data-tab="messages">
+            <span class="sidebar-icon" id="icon-chat"></span>
+            <span class="sidebar-text">客服消息</span>
+          </button>
+        </nav>
+        <div class="sidebar-footer">
+          <button class="btn btn-outline btn-sm" onclick="logout()">退出登录</button>
+        </div>
+      </aside>
+
+      <!-- Mobile Header -->
+      <header class="admin-mobile-header">
+        <button class="mobile-menu-btn" id="mobileMenuBtn"></button>
+        <span class="mobile-title">猩伙伴管理后台</span>
+      </header>
+
+      <!-- Main Content -->
+      <main class="admin-main">
+        <!-- 小区管理 -->
+        <div class="admin-section active" id="communities-section">
+          <div class="section-header">
+            <h2 class="section-title">小区管理</h2>
+            <button class="btn btn-primary" onclick="openAddCommunityModal()">添加小区</button>
+          </div>
+          <div class="admin-toolbar">
+            <input type="text" class="form-input" id="searchCommunity" placeholder="搜索小区...">
+          </div>
+          <div class="admin-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>小区图片</th>
+                  <th>小区名称</th>
+                  <th>区域</th>
+                  <th>地铁站</th>
+                  <th>房源数量</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="communitiesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 房源管理 -->
+        <div class="admin-section" id="properties-section">
+          <div class="section-header">
+            <h2 class="section-title">房源管理</h2>
+            <button class="btn btn-primary" onclick="openAddPropertyModal()">添加房源</button>
+          </div>
+          <div class="admin-toolbar">
+            <input type="text" class="form-input" id="searchProperty" placeholder="搜索房源...">
+          </div>
+          <div class="admin-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>主图</th>
+                  <th>房源名称</th>
+                  <th>小区</th>
+                  <th>户型</th>
+                  <th>可住人数</th>
+                  <th>标签</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="propertiesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 知识库设置 -->
+        <div class="admin-section" id="ai-settings-section">
+          <div class="section-header">
+            <h2 class="section-title">知识库设置</h2>
+          </div>
+          <div class="admin-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>文件名</th>
+                  <th>标签</th>
+                  <th>更新时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="knowledgeFileList">
+                <tr><td colspan="4" style="color: var(--text-muted);">加载中...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 客服消息 -->
+        <div class="admin-section" id="messages-section">
+          <div class="section-header">
+            <h2 class="section-title">客服咨询记录</h2>
+          </div>
+          <div class="admin-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>类型</th>
+                  <th>内容</th>
+                  <th>时间</th>
+                </tr>
+              </thead>
+              <tbody id="chatLogsTable">
+                <tr><td colspan="3" style="color: var(--text-muted);">暂无消息记录</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Community Edit Modal -->
+  <div class="modal" id="communityEditModal">
+    <div class="modal-overlay" onclick="closeCommunityEditModal()"></div>
+    <div class="modal-content" style="max-width: 500px;">
+      <button class="modal-close" onclick="closeCommunityEditModal()">&times;</button>
+      <h3 class="modal-title" id="communityModalTitle">编辑小区</h3>
+      <form id="communityForm">
+        <input type="hidden" id="communityId">
+        <div class="form-group">
+          <label class="form-label">小区名称</label>
+          <input type="text" class="form-input" id="communityName" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">区域</label>
+          <input type="text" class="form-input" id="communityArea" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">地铁站</label>
+          <input type="text" class="form-input" id="communityMetro" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">地址</label>
+          <input type="text" class="form-input" id="communityAddress">
+        </div>
+        <div class="form-group">
+          <label class="form-label">描述</label>
+          <textarea class="form-input" id="communityDesc" rows="3" style="resize: vertical;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">小区图片</label>
+          <input type="file" class="form-input" id="communityImage" accept="image/*">
+          <div id="communityImagePreview" class="image-preview"></div>
+        </div>
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
+          <button type="submit" class="btn btn-primary">保存</button>
+          <button type="button" class="btn btn-outline" onclick="closeCommunityEditModal()">取消</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Property Edit Modal -->
+  <div class="modal" id="propertyEditModal">
+    <div class="modal-overlay" onclick="closePropertyEditModal()"></div>
+    <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closePropertyEditModal()">&times;</button>
+      <h3 class="modal-title" id="propertyModalTitle">编辑房源</h3>
+      <form id="propertyForm">
+        <input type="hidden" id="propertyId">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div class="form-group">
+            <label class="form-label">房源名称</label>
+            <input type="text" class="form-input" id="propertyName" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">小区</label>
+            <select class="form-input" id="propertyCommunity" required></select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div class="form-group">
+            <label class="form-label">户型</label>
+            <input type="text" class="form-input" id="propertyType" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">可住人数</label>
+            <input type="text" class="form-input" id="propertyCapacity" required>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div class="form-group">
+            <label class="form-label">面积</label>
+            <input type="text" class="form-input" id="propertyArea">
+          </div>
+          <div class="form-group">
+            <label class="form-label">价格</label>
+            <input type="text" class="form-input" id="propertyPrice" value="电询">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">特色标签（用逗号分隔）</label>
+          <input type="text" class="form-input" id="propertyTags" placeholder="江景,艺术设计">
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            <input type="checkbox" id="propertyIsLuxury"> 顶奢房源
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="form-label">房间特色</label>
+          <textarea class="form-input" id="propertyFeatures" rows="4" style="resize: vertical;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">地址</label>
+          <input type="text" class="form-input" id="propertyAddress">
+        </div>
+        <div class="form-group">
+          <label class="form-label">房源图片（共<span id="propertyImageCount">0</span>张）</label>
+          <div class="property-images-grid" id="propertyImagesGrid"></div>
+          <input type="file" class="form-input" id="propertyImages" multiple accept="image/*" style="margin-top: 10px;">
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">支持上传新图片，已有的图片点击删除</p>
+        </div>
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
+          <button type="submit" class="btn btn-primary">保存</button>
+          <button type="button" class="btn btn-outline" onclick="closePropertyEditModal()">取消</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Knowledge Edit Modal -->
+  <div class="modal" id="knowledgeEditModal">
+    <div class="modal-overlay" onclick="closeKnowledgeEditModal()"></div>
+    <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closeKnowledgeEditModal()">&times;</button>
+      <h3 class="modal-title" id="knowledgeModalTitle">编辑文件</h3>
+      <div class="form-group">
+        <label class="form-label">文件名</label>
+        <input type="text" class="form-input" id="knowledgeFilename" readonly style="background: var(--bg-dark);">
+      </div>
+      <div class="form-group">
+        <label class="form-label">标签（用逗号分隔）</label>
+        <input type="text" class="form-input" id="knowledgeTags" placeholder="位置,地址,在哪">
+      </div>
+      <div class="form-group">
+        <label class="form-label">内容（Markdown格式）</label>
+        <textarea class="form-input" id="knowledgeContent" rows="20" style="resize: vertical; font-family: monospace;"></textarea>
+      </div>
+      <div style="display: flex; gap: 15px; margin-top: 20px;">
+        <button type="submit" class="btn btn-primary" onclick="saveKnowledgeFile()">保存</button>
+        <button type="button" class="btn btn-outline" onclick="closeKnowledgeEditModal()">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script>
+    // ========== 数据定义 ==========
+    // 房源图片映射 - 数组格式支持多图
+    const propertyImages = {
+      1: ['images/properties/1-fuxing.jpg', 'images/properties/1-fuxing-2.jpg', 'images/properties/1-fuxing-3.jpg', 'images/properties/1-fuxing-4.jpg', 'images/properties/1-fuxing-5.jpg', 'images/properties/1-fuxing-6.jpg'],
+      2: ['images/properties/2-shikong.jpg', 'images/properties/2-shikong-2.jpg', 'images/properties/2-shikong-3.jpg', 'images/properties/2-shikong-4.jpg', 'images/properties/2-shikong-5.jpg', 'images/properties/2-shikong-6.jpg'],
+      3: ['images/properties/3-runzhi.jpg', 'images/properties/3-runzhi-2.jpg', 'images/properties/3-runzhi-3.jpg', 'images/properties/3-runzhi-4.jpg', 'images/properties/3-runzhi-5.jpg', 'images/properties/3-runzhi-6.jpg'],
+      4: ['images/properties/4-tongqu.jpg', 'images/properties/4-tongqu-2.jpg', 'images/properties/4-tongqu-3.jpg', 'images/properties/4-tongqu-4.jpg', 'images/properties/4-tongqu-5.jpg', 'images/properties/4-tongqu-6.jpg'],
+      5: ['images/properties/5-lujiang.jpg', 'images/properties/5-lujiang-2.jpg', 'images/properties/5-lujiang-3.jpg', 'images/properties/5-lujiang-4.jpg', 'images/properties/5-lujiang-5.jpg', 'images/properties/5-lujiang-6.jpg'],
+      6: ['images/properties/6-fangao.jpg', 'images/properties/6-fangao-2.jpg', 'images/properties/6-fangao-3.jpg', 'images/properties/6-fangao-4.jpg', 'images/properties/6-fangao-5.jpg'],
+      7: ['images/properties/7-moden.jpg', 'images/properties/7-moden-2.jpg', 'images/properties/7-moden-3.jpg', 'images/properties/7-moden-4.jpg', 'images/properties/7-moden-5.jpg', 'images/properties/7-moden-6.jpg'],
+      8: ['images/properties/8-jiangyuan.jpg', 'images/properties/8-jiangyuan-2.jpg', 'images/properties/8-jiangyuan-3.jpg', 'images/properties/8-jiangyuan-4.jpg', 'images/properties/8-jiangyuan-5.jpg', 'images/properties/8-jiangyuan-6.jpg'],
+      9: ['images/properties/9-xuanfu.jpg', 'images/properties/9-xuanfu-2.jpg', 'images/properties/9-xuanfu-3.jpg', 'images/properties/9-xuanfu-4.jpg', 'images/properties/9-xuanfu-5.jpg', 'images/properties/9-xuanfu-6.jpg'],
+      10: ['images/properties/10-tiankong.jpg', 'images/properties/10-tiankong-2.jpg', 'images/properties/10-tiankong-3.jpg', 'images/properties/10-tiankong-4.jpg', 'images/properties/10-tiankong-5.jpg', 'images/properties/10-tiankong-6.jpg'],
+      11: ['images/properties/11-jiangtian.jpg', 'images/properties/11-jiangtian-2.jpg', 'images/properties/11-jiangtian-3.jpg', 'images/properties/11-jiangtian-4.jpg', 'images/properties/11-jiangtian-5.jpg', 'images/properties/11-jiangtian-6.jpg'],
+      12: ['images/properties/12-fenmo.jpg', 'images/properties/12-fenmo-2.jpg', 'images/properties/12-fenmo-3.jpg', 'images/properties/12-fenmo-4.jpg', 'images/properties/12-fenmo-5.jpg', 'images/properties/12-fenmo-6.jpg'],
+      13: ['images/properties/13-heyin.jpg', 'images/properties/13-heyin-2.jpg', 'images/properties/13-heyin-3.jpg', 'images/properties/13-heyin-4.jpg', 'images/properties/13-heyin-5.jpg', 'images/properties/13-heyin-6.jpg'],
+      14: ['images/properties/14-songyun.jpg', 'images/properties/14-songyun-2.jpg', 'images/properties/14-songyun-3.jpg', 'images/properties/14-songyun-4.jpg', 'images/properties/14-songyun-5.jpg', 'images/properties/14-songyun-6.jpg'],
+      15: ['images/properties/15-moka.jpg', 'images/properties/15-moka-2.jpg', 'images/properties/15-moka-3.jpg', 'images/properties/15-moka-4.jpg', 'images/properties/15-moka-5.jpg', 'images/properties/15-moka-6.jpg'],
+      16: ['images/properties/16-xingguang.jpg', 'images/properties/16-xingguang-2.jpg', 'images/properties/16-xingguang-3.jpg', 'images/properties/16-xingguang-4.jpg', 'images/properties/16-xingguang-5.jpg', 'images/properties/16-xingguang-6.jpg'],
+      17: ['images/properties/17-jiangtan.jpg', 'images/properties/17-jiangtan-2.jpg', 'images/properties/17-jiangtan-3.jpg', 'images/properties/17-jiangtan-4.jpg', 'images/properties/17-jiangtan-5.jpg', 'images/properties/17-jiangtan-6.jpg'],
+      18: ['images/properties/18-kongzhong.jpg', 'images/properties/18-kongzhong-2.jpg', 'images/properties/18-kongzhong-3.jpg', 'images/properties/18-kongzhong-4.jpg', 'images/properties/18-kongzhong-5.jpg', 'images/properties/18-kongzhong-6.jpg'],
+      19: ['images/properties/19-huajian.jpg', 'images/properties/19-huajian-2.jpg', 'images/properties/19-huajian-3.jpg', 'images/properties/19-huajian-4.jpg', 'images/properties/19-huajian-5.jpg', 'images/properties/19-huajian-6.jpg'],
+      20: ['images/properties/20-chanyi.jpg', 'images/properties/20-chanyi-2.jpg', 'images/properties/20-chanyi-3.jpg', 'images/properties/20-chanyi-4.jpg', 'images/properties/20-chanyi-5.jpg', 'images/properties/20-chanyi-6.jpg'],
+      21: ['images/properties/21-mimi.jpg', 'images/properties/21-mimi-2.jpg', 'images/properties/21-mimi-3.jpg', 'images/properties/21-mimi-4.jpg', 'images/properties/21-mimi-5.jpg', 'images/properties/21-mimi-6.jpg']
+    };
+
+    // 小区图片映射
+    const communityImages = {
+      'baoli': 'images/baoli.jpg',
+      'jianfayangyun': 'images/jianfa.jpg',
+      'beichen': 'images/beichen.jpg'
+    };
+
+    // ========== 服务端 API 工具 ==========
+    let adminToken = localStorage.getItem('xinghuoban_token') || '';
+    let serverProperties = [];
+    let serverCommunities = [];
+
+    async function apiCall(url, method = 'GET', body = null) {
+      const opts = {
+        method,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` }
+      };
+      if (body) opts.body = JSON.stringify(body);
+      try {
+        const res = await fetch(url, opts);
+        return await res.json();
+      } catch (e) {
+        console.error('API error:', url, e);
+        return { success: false, message: '网络错误' };
+      }
+    }
+
+    // 检查是否已登录
+    if (localStorage.getItem('xinghuoban_admin') && adminToken) {
+      showAdminDashboard();
+    }
+
+    // 登录表单（接入服务端 API）
+    // 登录（不走 apiCall，避免带旧 token 导致 401）
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const phone = document.getElementById('loginPhone').value;
+      const password = document.getElementById('loginPassword').value;
+      const btn = this.querySelector('[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = '登录中...';
+
+      let result;
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, password })
+        });
+        result = await res.json();
+      } catch (e) {
+        console.error('Login error:', e);
+        alert('登录请求失败，请检查服务器是否运行');
+        btn.disabled = false;
+        btn.textContent = '登录';
+        return;
+      }
+
+      btn.disabled = false;
+      btn.textContent = '登录';
+
+      if (result.success) {
+        adminToken = result.token;
+        localStorage.setItem('xinghuoban_token', adminToken);
+        localStorage.setItem('xinghuoban_admin', phone);
+        showAdminDashboard();
+      } else {
+        alert(result.message || '手机号或密码错误');
+      }
+    });
+
+    function showAdminDashboard() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('adminDashboard').style.display = 'flex';
+      loadPropertiesTable().then(() => loadCommunitiesTable());
+      loadKnowledgeFileList();
+      loadChatLogs();
+    }
+
+    function logout() {
+      apiCall('/api/admin/logout', 'POST').catch(() => {});
+      localStorage.removeItem('xinghuoban_admin');
+      localStorage.removeItem('xinghuoban_token');
+      location.reload();
+    }
+
+    // ========== 左侧导航（锚点跳转）==========
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        // 如果是链接则不拦截
+        if (this.tagName === 'A') return;
+
+        e.preventDefault();
+        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+
+        this.classList.add('active');
+        const tabName = this.dataset.tab;
+        document.getElementById(tabName + '-section').classList.add('active');
+
+        // 滚动到对应模块
+        document.getElementById(tabName + '-section').scrollIntoView({ behavior: 'smooth' });
+
+        // 关闭移动端菜单
+        document.getElementById('adminSidebar').classList.remove('open');
+      });
+    });
+
+    // 移动端菜单
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+      document.getElementById('adminSidebar').classList.toggle('open');
+    });
+
+    // ========== 小区管理 ==========
+    async function loadCommunitiesTable() {
+      const result = await apiCall('/api/communities');
+      const items = result.data?.items || result.data || [];
+      serverCommunities = items;
+      const tbody = document.getElementById('communitiesTableBody');
+      tbody.innerHTML = serverCommunities.map(c => {
+        const propertyCount = serverProperties.filter(p => p.community === c.id).length;
+        const imgSrc = communityImages[c.id] || 'images/logo.jpg';
+        return `
+          <tr>
+            <td><img src="${imgSrc}" alt="${c.name}" class="property-thumb" style="width:80px;height:50px;object-fit:cover;border-radius:6px;" onerror="this.src='images/logo.jpg'"></td>
+            <td>${c.name}</td>
+            <td>${c.area || ''}</td>
+            <td>${c.metro || ''}</td>
+            <td>${propertyCount}套</td>
+            <td>
+              <button class="btn-detail" onclick="editCommunity('${c.id}')">编辑</button>
+              <button class="btn-detail" onclick="deleteCommunity('${c.id}')" style="color:#e74c3c;margin-left:5px;">删除</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      populateCommunitySelect();
+    }
+
+    async function deleteCommunity(id) {
+      if (!confirm('确定要删除该小区吗？此操作不可恢复！')) return;
+      const result = await apiCall(`/api/communities/${id}`, 'DELETE');
+      if (result.success) { await loadCommunitiesTable(); }
+      else { alert(result.message || '删除失败'); }
+    }
+
+    function openAddCommunityModal() {
+      document.getElementById('communityModalTitle').textContent = '添加小区';
+      document.getElementById('communityForm').reset();
+      document.getElementById('communityId').value = '';
+      document.getElementById('communityImagePreview').innerHTML = '';
+      document.getElementById('communityEditModal').classList.add('active');
+    }
+
+    function editCommunity(id) {
+      const list = serverCommunities.length > 0 ? serverCommunities : communities;
+      const community = list.find(c => c.id === id);
+      if (!community) return;
+
+      document.getElementById('communityModalTitle').textContent = '编辑小区';
+      document.getElementById('communityId').value = id;
+      document.getElementById('communityName').value = community.name;
+      document.getElementById('communityArea').value = community.area;
+      document.getElementById('communityMetro').value = community.metro;
+      document.getElementById('communityAddress').value = community.address || '';
+      document.getElementById('communityDesc').value = community.description || '';
+
+      const imgSrc = communityImages[id] || 'images/logo.jpg';
+      document.getElementById('communityImagePreview').innerHTML = `<img src="${imgSrc}" style="width:100px;height:60px;object-fit:cover;border-radius:4px;">`;
+
+      document.getElementById('communityEditModal').classList.add('active');
+    }
+
+    function closeCommunityEditModal() {
+      document.getElementById('communityEditModal').classList.remove('active');
+    }
+
+    document.getElementById('communityForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const id = document.getElementById('communityId').value;
+      const payload = {
+        id: id || undefined,
+        name: document.getElementById('communityName').value,
+        area: document.getElementById('communityArea').value,
+        metro: document.getElementById('communityMetro').value,
+        address: document.getElementById('communityAddress').value,
+        description: document.getElementById('communityDesc').value
+      };
+      const result = await apiCall('/api/communities', 'POST', payload);
+      if (result.success) {
+        closeCommunityEditModal();
+        await loadCommunitiesTable();
+        alert('保存成功！已同步到服务器');
+      } else {
+        alert(result.message || '保存失败，请检查是否已登录');
+      }
+    });
+
+    // ========== 房源管理 ==========
+    async function loadPropertiesTable() {
+      const result = await apiCall('/api/properties');
+      const items = result.data?.items || result.data || [];
+      serverProperties = items;
+      const tbody = document.getElementById('propertiesTableBody');
+      tbody.innerHTML = serverProperties.map(p => {
+        const tagClass = p.isLuxury ? '' : ((p.tags && p.tags.includes('江景')) ? 'river' : '');
+        const tagText = p.isLuxury ? '顶奢' : ((p.tags && p.tags[0]) || '');
+        const imgArray = propertyImages[p.id] || [];
+        const realImage = imgArray[0] || p.image || 'images/logo.jpg';
+        return `
+          <tr>
+            <td><img src="${realImage}" alt="${p.name}" class="property-thumb" onerror="this.src='images/logo.jpg'"></td>
+            <td>猩伙伴·${p.name}</td>
+            <td>${p.communityName}</td>
+            <td>${p.type}</td>
+            <td>${p.capacity}</td>
+            <td><span class="property-tag ${tagClass}">${tagText}</span></td>
+            <td>
+              <button class="btn-detail" onclick="editProperty(${p.id})">编辑</button>
+              <button class="btn-detail" onclick="deleteProperty(${p.id})" style="color:#e74c3c;margin-left:5px;">删除</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function deleteProperty(id) {
+      if (!confirm('确定要删除该房源吗？此操作不可恢复！')) return;
+      const result = await apiCall(`/api/properties/${id}`, 'DELETE');
+      if (result.success) { await loadPropertiesTable(); }
+      else { alert(result.message || '删除失败'); }
+    }
+
+    function populateCommunitySelect() {
+      const list = serverCommunities.length > 0 ? serverCommunities : communities;
+      const select = document.getElementById('propertyCommunity');
+      select.innerHTML = list.map(c =>
+        `<option value="${c.id}">${c.name}</option>`
+      ).join('');
+    }
+
+    function openAddPropertyModal() {
+      document.getElementById('propertyModalTitle').textContent = '添加房源';
+      document.getElementById('propertyForm').reset();
+      document.getElementById('propertyId').value = '';
+      editingPropertyImages = [];
+      renderPropertyImagesGrid();
+      populateCommunitySelect();
+      document.getElementById('propertyEditModal').classList.add('active');
+    }
+
+    function editProperty(id) {
+      const list = serverProperties.length > 0 ? serverProperties : properties;
+      const property = list.find(p => p.id === id);
+      if (!property) return;
+
+      document.getElementById('propertyModalTitle').textContent = '编辑房源';
+      document.getElementById('propertyId').value = id;
+      document.getElementById('propertyName').value = property.name;
+      document.getElementById('propertyType').value = property.type;
+      document.getElementById('propertyCapacity').value = property.capacity;
+      document.getElementById('propertyArea').value = property.area || '';
+      document.getElementById('propertyPrice').value = property.price || '电询';
+      document.getElementById('propertyTags').value = (property.tags || []).join(',');
+      document.getElementById('propertyIsLuxury').checked = property.isLuxury;
+      document.getElementById('propertyFeatures').value = property.features || '';
+      document.getElementById('propertyAddress').value = property.address || '';
+
+      populateCommunitySelect();
+      document.getElementById('propertyCommunity').value = property.community;
+
+      // 加载当前图片数组
+      editingPropertyImages = propertyImages[id] ? [...propertyImages[id]] : [];
+      renderPropertyImagesGrid();
+
+      document.getElementById('propertyEditModal').classList.add('active');
+    }
+
+    function renderPropertyImagesGrid() {
+      const grid = document.getElementById('propertyImagesGrid');
+      document.getElementById('propertyImageCount').textContent = editingPropertyImages.length;
+
+      grid.innerHTML = editingPropertyImages.map((img, index) => `
+        <div class="property-image-item">
+          <img src="${img}" alt="图片${index + 1}">
+          <button type="button" class="property-image-delete" onclick="deletePropertyImage(${index})">&times;</button>
+        </div>
+      `).join('');
+    }
+
+    function deletePropertyImage(index) {
+      if (confirm('确定删除这张图片吗？')) {
+        editingPropertyImages.splice(index, 1);
+        renderPropertyImagesGrid();
+      }
+    }
+
+    function closePropertyEditModal() {
+      document.getElementById('propertyEditModal').classList.remove('active');
+    }
+
+    document.getElementById('propertyForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('propertyId').value) || null;
+      const tagsStr = document.getElementById('propertyTags').value;
+      const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()) : [];
+      const communityId = document.getElementById('propertyCommunity').value;
+      const communityList = serverCommunities.length > 0 ? serverCommunities : communities;
+      const community = communityList.find(c => c.id === communityId);
+
+      const payload = {
+        id: id || undefined,
+        name: document.getElementById('propertyName').value,
+        community: communityId,
+        communityName: community ? community.name : '',
+        type: document.getElementById('propertyType').value,
+        capacity: document.getElementById('propertyCapacity').value,
+        area: document.getElementById('propertyArea').value,
+        price: document.getElementById('propertyPrice').value,
+        tags: tags,
+        isLuxury: document.getElementById('propertyIsLuxury').checked,
+        features: document.getElementById('propertyFeatures').value,
+        address: document.getElementById('propertyAddress').value,
+        image: editingPropertyImages[0] || '',   // 封面缩略图（首张）
+        images: [...editingPropertyImages]        // 完整相册数组
+      };
+
+      // 同步内存中的图片数组（admin 预览用）
+      if (id) propertyImages[id] = [...editingPropertyImages];
+
+      const result = await apiCall('/api/properties', 'POST', payload);
+      if (result.success) {
+        closePropertyEditModal();
+        await loadPropertiesTable();
+        alert('保存成功！已同步到服务器，前端刷新即可看到最新数据');
+      } else {
+        alert(result.message || '保存失败，请检查是否已登录');
+      }
+    });
+
+    // 新图片上传处理（实际上传到服务器）
+    document.getElementById('propertyImages').addEventListener('change', async function(e) {
+      const files = e.target.files;
+      if (files.length === 0) return;
+
+      for (let i = 0; i < files.length; i++) {
+        const formData = new FormData();
+        formData.append('image', files[i]);
+        try {
+          const res = await fetch('/api/upload', { method: 'POST', body: formData });
+          const result = await res.json();
+          if (result.success && result.data?.url) {
+            editingPropertyImages.push(result.data.url);
+          }
+        } catch (e) {
+          console.error('Upload error:', e);
+        }
+      }
+      renderPropertyImagesGrid();
+      e.target.value = '';
+    });
+
+    // ========== 知识库管理 ==========
+    const KNOWLEDGE_FILES_INFO = {
+      'index.md': '猩伙伴民宿介绍',
+      'location.md': '位置交通指引',
+      'pricing.md': '价格咨询',
+      'booking.md': '预订方式',
+      'amenities.md': '设施介绍',
+      'rooms.md': '房源房间'
+    };
+
+    async function loadKnowledgeFileList() {
+      const result = await apiCall('/api/knowledge/files');
+      const files = result.data || [];
+      const tbody = document.getElementById('knowledgeFileList');
+      tbody.innerHTML = files.map(f => `
+        <tr>
+          <td style="font-weight: 600; color: var(--accent);">${KNOWLEDGE_FILES_INFO[f.filename] || f.filename}</td>
+          <td>${(f.tags || []).join(', ')}</td>
+          <td>${f.updatedAt || '-'}</td>
+          <td>
+            <button class="btn-detail" onclick="openKnowledgeEditor('${f.filename}')">编辑</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function openKnowledgeEditor(filename) {
+      const result = await apiCall(`/api/knowledge/files/${filename}`);
+      if (!result.success) {
+        alert(result.message || '加载失败');
+        return;
+      }
+      const data = result.data;
+      document.getElementById('knowledgeModalTitle').textContent = KNOWLEDGE_FILES_INFO[filename] || filename;
+      document.getElementById('knowledgeFilename').value = filename;
+      document.getElementById('knowledgeTags').value = (data.tags || []).join(', ');
+      document.getElementById('knowledgeContent').value = data.content || '';
+      document.getElementById('knowledgeEditModal').classList.add('active');
+    }
+
+    function closeKnowledgeEditModal() {
+      document.getElementById('knowledgeEditModal').classList.remove('active');
+    }
+
+    async function saveKnowledgeFile() {
+      const filename = document.getElementById('knowledgeFilename').value;
+      const tagsStr = document.getElementById('knowledgeTags').value;
+      const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
+      const content = document.getElementById('knowledgeContent').value;
+
+      const result = await apiCall(`/api/knowledge/files/${filename}`, 'PUT', { content, tags });
+      if (result.success) {
+        closeKnowledgeEditModal();
+        await loadKnowledgeFileList();
+        alert('保存成功！');
+      } else {
+        alert(result.message || '保存失败');
+      }
+    }
+
+    // ========== 客服消息 ==========
+    async function loadChatLogs() {
+      const result = await apiCall('/api/chat-logs');
+      const logs = result.data?.items || result.data || [];
+      const tbody = document.getElementById('chatLogsTable');
+      if (logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="color: var(--text-muted);">暂无消息记录</td></tr>';
+        return;
+      }
+      tbody.innerHTML = logs.slice().reverse().map(log => `
+        <tr>
+          <td style="font-weight: 600; color: ${log.type === 'user' ? 'var(--accent)' : 'var(--primary)'}">${log.type === 'user' ? '用户' : '客服'}</td>
+          <td>${log.message || log.content || ''}</td>
+          <td style="color: var(--text-muted); font-size: 0.8rem;">${new Date(log.time).toLocaleString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    // ========== 保存数据 ==========
+    function saveToStorage() {
+      localStorage.setItem('xinghuoban_communities', JSON.stringify(communities));
+      localStorage.setItem('xinghuoban_properties', JSON.stringify(properties));
+      localStorage.setItem('xinghuoban_property_images', JSON.stringify(propertyImages));
+    }
+
+    function loadFromStorage() {
+      const savedCommunities = localStorage.getItem('xinghuoban_communities');
+      const savedProperties = localStorage.getItem('xinghuoban_properties');
+      const savedImages = localStorage.getItem('xinghuoban_property_images');
+
+      if (savedCommunities) {
+        try {
+          const parsed = JSON.parse(savedCommunities);
+          if (Array.isArray(parsed)) {
+            parsed.forEach(sc => {
+              const exists = communities.find(c => c.id === sc.id);
+              if (!exists) {
+                communities.push(sc);
+              } else {
+                Object.assign(exists, sc);
+              }
+            });
+          }
+        } catch(e) {}
+      }
+      if (savedProperties) {
+        try {
+          const parsed = JSON.parse(savedProperties);
+          if (Array.isArray(parsed)) {
+            parsed.forEach(sp => {
+              const exists = properties.find(p => p.id === sp.id);
+              if (!exists) {
+                properties.push(sp);
+              } else {
+                Object.assign(exists, sp);
+              }
+            });
+          }
+        } catch(e) {}
+      }
+      if (savedImages) {
+        try {
+          const parsed = JSON.parse(savedImages);
+          Object.assign(propertyImages, parsed);
+        } catch(e) {}
+      }
+    }
+
+    loadFromStorage();
+
+    // ========== 搜索功能 ==========
+    document.getElementById('searchProperty').addEventListener('input', function(e) {
+      const search = e.target.value.toLowerCase();
+      const tbody = document.getElementById('propertiesTableBody');
+      const rows = tbody.querySelectorAll('tr');
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(search) ? '' : 'none';
+      });
+    });
+
+    document.getElementById('searchCommunity').addEventListener('input', function(e) {
+      const search = e.target.value.toLowerCase();
+      const tbody = document.getElementById('communitiesTableBody');
+      const rows = tbody.querySelectorAll('tr');
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(search) ? '' : 'none';
+      });
+    });
+
+    // ESC关闭弹窗
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeCommunityEditModal();
+        closePropertyEditModal();
+        closeKnowledgeEditModal();
+      }
+    });
+
+    // ========== 初始化 SVG 图标 ==========
+    function initIcons() {
+      const iconMap = {
+        'icon-dashboard': icons.dashboard,
+        'icon-buildings': icons.buildings,
+        'icon-house': icons.house,
+        'icon-money': icons.money,
+        'icon-chart': icons.chart,
+        'icon-smartphone': icons.smartphone,
+        'icon-bot': icons.bot,
+        'icon-settings': icons.settings,
+        'icon-chat': icons.chat,
+        'icon-calendar': icons.calendar,
+        'icon-bed': icons.bed,
+        'icon-operator': icons.user,
+        'icon-service': icons.chat,
+        'icon-finance': icons.money,
+        'icon-content': icons.clipboard,
+        'icon-user': icons.user
+      };
+
+      // 替换所有带 icon-* class 的元素
+      Object.keys(iconMap).forEach(className => {
+        const els = document.querySelectorAll('.' + className + ', [id="' + className + '"]');
+        els.forEach(el => {
+          el.innerHTML = iconMap[className];
+        });
+      });
+
+      // 替换 dashboard-card-icon 中的图标
+      document.querySelectorAll('.icon-dashboard').forEach(el => el.innerHTML = icons.dashboard);
+      document.querySelectorAll('.icon-buildings').forEach(el => el.innerHTML = icons.buildings);
+      document.querySelectorAll('.icon-house').forEach(el => el.innerHTML = icons.house);
+      document.querySelectorAll('.icon-money').forEach(el => el.innerHTML = icons.money);
+      document.querySelectorAll('.icon-calendar').forEach(el => el.innerHTML = icons.calendar);
+      document.querySelectorAll('.icon-bed').forEach(el => el.innerHTML = icons.bed);
+    }
+
+    // 页面加载完成后初始化图标
+    document.addEventListener('DOMContentLoaded', initIcons);
+  </script>
+</body>
+</html>
