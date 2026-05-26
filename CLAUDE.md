@@ -141,7 +141,7 @@ AI_API_KEY=sk-xxx AI_MODEL=qwen pm2 start server/index.js --name xinghuoban
 Authorization: Bearer <token>
 ```
 
-**初始账号**：手机号 `15874818550` / 密码 `123456`
+**初始账号**：手机号由种子数据设置
 
 ---
 
@@ -196,7 +196,7 @@ tags: [位置, 地址, 在哪, 交通, 地铁]
 
 - **URL**：`http://localhost:4000/admin.html`
 - **功能模块**：小区管理、房源管理、知识库设置、客服咨询记录
-- **初始账号**：手机号 `15874818550` / 密码 `123456`
+- **初始账号**：手机号由种子数据设置
 
 ---
 

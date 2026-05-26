@@ -161,7 +161,7 @@ DEEPSEEK_API_KEY=sk-xxx DEEPSEEK_BASE_URL=https://api.deepseek.com npm start
 Authorization: Bearer <token>
 ```
 
-**默认管理员账号**：手机号 `15874818550` / 密码 `123456`
+**默认管理员账号**：手机号和密码由管理员在种子数据中设置
 
 ---
 

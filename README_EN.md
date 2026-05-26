@@ -161,7 +161,7 @@ After successful login, include the token in subsequent requests:
 Authorization: Bearer <token>
 ```
 
-**Default Admin**: Phone `15874818550` / Password `123456`
+**Default Admin**: Credentials are set during initial admin setup
 
 ---
 
